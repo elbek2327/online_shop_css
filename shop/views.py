@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 from shop.models import Product, Category
 from .models import Product
+from shop.forms import ProductForm, ProductModelForm
 
 
 
@@ -23,25 +24,20 @@ def index(request, category_id: int | None = None):
 
 
 def product_detail(request, product_id):
-
+    categories = Category.objects.all()
     product = get_object_or_404(Product, id=product_id)
     context = {
-        'product': product
+        'product': product,
+        'categories': categories
     }
-    return render(request, 'shop/detail.html', context)
+    return render(request, 'shop/product_detail.html', context)
 
 
 
 def home(request):
     return render(request, 'shop/home.html')
 
-def popular_products(request):
-    products = Product.objects.order_by('-rating')[:12]
-    return render(request, 'shop/popular_products.html', {'products': products})
 
-def new_arrivals(request):
-    products = Product.objects.order_by('-updated_at')[:12]
-    return render(request, 'shop/new_arrivals.html', {'products': products})
 
 
 
@@ -60,3 +56,51 @@ def related_product(request, product_id):
         'related_products': related_products,
     }
     return render(request, 'shop/detail.html', context)
+
+
+
+@login_required(login_url='/admin/')
+def product_create(request):
+    form = ProductForm()
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save(commit=True)
+
+            return redirect('index')
+
+    context = {
+        'form': form
+    }
+    return render(request, 'shop/add-product.html', context)
+
+
+
+
+
+@login_required
+def product_update(request,product_id):
+    product = get_object_or_404(Product, id= product_id)
+    form = ProductModelForm(instance=product)
+    if request.method == 'POST':
+        form = ProductModelForm(request.POST, request.FILES, instance = product)
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+    context = {
+    'form': form,
+    'product': product
+    }
+    return render(request, 'shop/product_update.html', context)
+    
+    
+    
+    
+    
+@login_required
+def product_delete(request, product_id):
+    product = get_object_or_404(Product,id=product_id)
+    if request.method == 'POST':
+        product.delete()
+        return redirect('index')
+    return render(request, 'shop/product_delete.html', {'product': product})

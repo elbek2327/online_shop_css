@@ -39,9 +39,7 @@
                         <li>
                             <hr class="dropdown-divider"/>
                         </li>
-                        <li><a class="dropdown-item" href={% url 'popular_products'%}>Popular Items</a></li>
-                        <li><a class="dropdown-item" href={% url 'new_arrivals' %}>New Arrivals</a></li>
-                        
+
                         {% for category in categories %}
                             <li><a class="dropdown-item"
                                    href="{% url 'products_of_category' category.id %}">{{ category.title }}</a></li>
@@ -89,6 +87,14 @@
             <a class="btn btn-outline-dark mt-auto" href="#"> Likes </a>
         </div>
 
+        <!--Adding product-->
+        {% if user.is_superuser %}
+            <div class = "col-1">
+                <a href= "{% url 'product_create' %}">
+                    <button type = "submit" class = "btn btn-outline-success">Add product</button>
+                </a>
+            </div>
+        {% endif %}
 
     </div>
 </div>
@@ -126,8 +132,18 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!--Badge section-->
                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                             <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="{% url 'product_detail' product.id %}">View product</a></div>
+                            {% if user.is_superuser %}
+                                <div class = "mt-2">
+                                    <a href = "{% url 'product_update' product.id %}" class="btn btn-sm btn-primary">Update</a>
+                                    <a href = "{% url 'product_delete' product.id %}" class="btn btn-sm btn-primary">Delete</a>
+                                    
+                            
+                                </div>  
+                            {% endif %}  
                         </div>
                     </div>
                 </div>
