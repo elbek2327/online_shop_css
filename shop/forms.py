@@ -1,5 +1,6 @@
 from django import forms
-from shop.models import Product, Category
+from shop.models import Product, Category, Comment
+from .models import Order
 
 
 class ProductForm(forms.Form):
@@ -37,3 +38,40 @@ class ProductModelForm(forms.ModelForm):
         # fields = ['name', 'description', 'price', 'image', 'quantity', 'category', 'discount', 'rating']
         exclude = ()
     
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['name', 'surname', 'phone', 'quantity']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "Your name"}),
+            'surname': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "Your surname"}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "Your phone"}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': "Quantity"})
+        }
+        
+        
+        
+        
+    def clean_quantity(self):
+        quantity = self.cleaned_data['quantity']
+        product_id = self.initial.get('product_id')
+        product = Product.objects.get(id=product_id)
+
+        if quantity > product.quantity:
+            raise forms.ValidationError("Not enough stock available.")
+        return quantity
+    
+
+
+
+
+# added new
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ('commenter_name', 'comment')
+        widgets = {
+            'commenter_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'comment': forms.Textarea(attrs={'class': 'form-control'}),
+        }
+

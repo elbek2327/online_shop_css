@@ -1,21 +1,25 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
-
-from shop.models import Product, Category
-from .models import Product
-from shop.forms import ProductForm, ProductModelForm
-
-
-
+from django.db.models import Q
+from shop.models import Product, Category, Comment
+from .models import Product, Order
+from shop.forms import ProductForm, ProductModelForm, OrderForm, CommentForm
+#2 modules imported 
+from django.utils import timezone
+from datetime import datetime
 # Create your views here.
 
 
 def index(request, category_id: int | None = None):
+    search_query = request.GET.get('q', '')
     categories = Category.objects.all()
     if category_id:
         products = Product.objects.filter(category_id=category_id)
     else:
-        products = Product.objects.all().order_by('-updated_at')  # select * from products order by updated_at DESC
+        products = Product.objects.all().order_by('-updated_at') 
+    
+    if search_query:
+        products = Product.objects.filter(Q(name__icontains=search_query) | Q(description__icontains=search_query))
     context = {
         'products': products,
         'categories': categories
@@ -26,9 +30,13 @@ def index(request, category_id: int | None = None):
 def product_detail(request, product_id):
     categories = Category.objects.all()
     product = get_object_or_404(Product, id=product_id)
+    
+    num_comments = Comment.objects.filter(product=product).count() #couunt comments for each product
+    
     context = {
         'product': product,
-        'categories': categories
+        'categories': categories,
+        'num_comments': num_comments
     }
     return render(request, 'shop/product_detail.html', context)
 
@@ -72,7 +80,7 @@ def product_create(request):
     context = {
         'form': form
     }
-    return render(request, 'shop/add-product.html', context)
+    return render(request, 'shop/product_create.html', context)
 
 
 
@@ -104,3 +112,89 @@ def product_delete(request, product_id):
         product.delete()
         return redirect('index')
     return render(request, 'shop/product_delete.html', {'product': product})
+
+
+
+
+# working
+@login_required
+def product_placing(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.product = product
+            order.user = request.user
+            if order.quantity <= product.quantity:
+                product.quantity -= order.quantity
+                product.save()
+                order.is_placed = True
+                order.save()
+                return redirect('index')  # Redirect to a success page
+            else:
+                form.add_error('quantity', 'Not enough stock available')
+
+    else:
+        form = OrderForm(initial={'product_id': product_id})
+
+    return render(request, 'shop/product_detail.html', {'product': product, 'form': form})
+
+
+
+
+# adding def comment  '''fisrys one'''
+# @login_required
+# def add_comment(request, pk):
+#     product =  Product.objects.get(id=pk)
+#     form = CommentForm(request.POST)
+#     if request.method == 'POST':
+#         form = CommentForm(request.POST, instance=product)
+#         if form.is_valid():
+#             name = request.user.username
+#             body = form.cleaned_data['comment']
+            
+#             c = Comment(product = product, commenter_name=name, comment=body, date_added = datetime.now())
+#             c.save()
+        
+#             return redirect('product_detail')
+#         else:
+#             print('Form is invalid message from views')
+#     else:
+#         form = CommentForm()
+        
+#     context = {
+#         'form': form 
+#     }
+#     return render(request, 'shop/add_comment.html', context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+@login_required
+def add_comment(request, pk):
+    product = get_object_or_404(Product, id=pk)  
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            name = request.user.username
+            body = form.cleaned_data['comment']  
+
+            c = Comment(product=product, commenter_name=name, comment=body, date_added=datetime.now())
+            c.save()
+
+            return redirect('product_detail', product_id=pk)  
+    else:
+        form = CommentForm()
+
+    return render(request, 'shop/add_comment.html', {'form': form})

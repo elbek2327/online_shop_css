@@ -1,5 +1,6 @@
 from django.db import models
 from decimal import Decimal
+from django.contrib.auth.models import User
 
 
 # Create your models here.
@@ -60,3 +61,34 @@ class Product(BaseModel):
 
     class Meta:
         db_table = 'product'
+
+
+
+# order name, quantity, who is ordering, foreign key
+class Order(BaseModel):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE) #qaysi productni aynan
+    user = models.ForeignKey(User, on_delete=models.CASCADE) #kim placed qildi
+    name = models.CharField(max_length=45)
+    surname = models.CharField(max_length=55)
+    phone = models.CharField(max_length=14)
+    quantity = models.PositiveBigIntegerField(default=1)
+    is_placed = models.BooleanField(default=False) #Joylanganmi yoqmi
+    
+    def __str__(self):
+        return f'Order: {self.product.name} - {self.quantity} - {self.user.username}'
+    
+    class Meta:
+        db_table = 'order'
+        
+
+
+# COmment  added new  migrated
+class Comment(BaseModel):
+    product = models.ForeignKey(Product, related_name="comments", on_delete=models.CASCADE)
+    commenter_name = models.CharField(max_length=70)
+    comment = models.TextField()
+    date_added = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f" {self.product.name} - {self.commenter_name}"
+    

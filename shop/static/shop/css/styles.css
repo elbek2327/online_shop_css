@@ -134,7 +134,208 @@ h1,
     line-height: 1.2;
 }
 
-h1,
+h1 {
+    font-family: 'Montserrat', sans-serif;
+    /* Another modern font */
+    font-size: 2.8em;
+    font-weight: 700;
+    color: #2c3e50;
+    /* A darker blue-gray */
+    line-height: 1.1;
+    margin-bottom: 30px;
+    text-align: center;
+    position: relative;
+    /* Needed for pseudo-element */
+    padding-bottom: 10px;
+    /* Space for the underline */
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    width: 60px;
+    /* Width of the underline */
+    height: 3px;
+    background-color: #3498db;
+    /* Blue underline color */
+}
+
+p.lead {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.05em;
+    line-height: 1.7;
+    color: #444;
+    margin-bottom: 25px;
+    text-align: left;
+    letter-spacing: 0.01em;
+    /* Slight letter spacing */
+    word-spacing: 0.05em;
+    /* Slight word spacing */
+}
+
+.button-container {
+    display: flex;
+    /* Use flexbox for side-by-side layout */
+    justify-content: flex-start;
+    /* Align buttons to the start of the container */
+    align-items: center;
+    /* Vertically align buttons in the center */
+}
+
+.update-button {
+    background-color: yellow;
+    color: black;
+    /* Or any dark color for contrast */
+    border: none;
+    padding: 10px 20px;
+    margin-right: 10px;
+    /* Space between buttons */
+    cursor: pointer;
+    border-radius: 5px;
+    /* Rounded corners */
+}
+
+.delete-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+
+/* Optional: Add hover effects */
+
+.update-button:hover {
+    background-color: #ffd700;
+    /* Slightly darker yellow on hover */
+}
+
+.delete-button:hover {
+    background-color: #cc0000;
+    /* Slightly darker red on hover */
+}
+
+
+/* Optional: add space to the button container if needed */
+
+.button-container {
+    margin: 20px 0;
+}
+
+.row.gx-4.gx-lg-5.row-cols-2.row-cols-md-3.row-cols-xl-4.justify-content-center {
+    /* Adjust spacing between columns */
+    margin-left: -1rem;
+    margin-right: -1rem;
+}
+
+.col.mb-5 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.card.h-100.shadow-sm {
+    border: 1px solid #dee2e6;
+    /* Add a subtle border */
+    border-radius: 0.5rem;
+    /* Round the corners */
+    overflow: hidden;
+    /* Ensure images stay within the card */
+    transition: transform 0.2s ease-in-out;
+    /* Smooth hover effect */
+}
+
+.card.h-100.shadow-sm:hover {
+    transform: translateY(-5px);
+    /* Slightly lift the card on hover */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    /* Enhance shadow on hover */
+}
+
+.card-img-top {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    /* Maintain aspect ratio and cover container */
+    border-bottom: 1px solid #dee2e6;
+    /* Add a subtle border below the image */
+}
+
+.card-body.p-4 {
+    padding: 1.5rem;
+    /* Increase padding for better spacing */
+}
+
+.text-center {
+    text-align: center;
+}
+
+.fw-bolder {
+    font-weight: 600;
+    /* Slightly bolder font */
+    margin-bottom: 0.5rem;
+    /* Space below the title */
+}
+
+.d-flex.justify-content-center.small.text-warning.mb-2 {
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.bi-star-fill {
+    color: #ffc107;
+    /* Star color */
+    font-size: 1rem;
+    /* Adjust star size */
+    margin: 0 2px;
+    /* Slight space between stars */
+}
+
+.mt-2 {
+    margin-top: 0.5rem;
+}
+
+.text-muted.text-decoration-line-through {
+    color: #6c757d;
+    text-decoration: line-through;
+}
+
+.text-danger {
+    color: #dc3545;
+}
+
+.card-footer.p-4.pt-0.border-top-0.bg-transparent {
+    padding: 1rem;
+    padding-top: 0;
+    background-color: transparent;
+    border-top: none;
+}
+
+.btn.btn-outline-dark.mt-auto {
+    margin-top: 1rem;
+}
+
+.d-flex.justify-content-around.mt-3 {
+    justify-content: space-around;
+    margin-top: 1rem;
+}
+
+.btn.btn-sm {
+    font-size: 0.875rem;
+    /* Smaller button font */
+    padding: 0.25rem 0.5rem;
+    /* Smaller button padding */
+}
+
+.badge.bg-danger.text-white.position-absolute {
+    top: 0.5rem;
+    right: 0.5rem;
+}
+
 .h1 {
     font-size: calc(1.375rem + 1.5vw);
 }
@@ -209,6 +410,17 @@ address {
     margin-bottom: 1rem;
     font-style: normal;
     line-height: inherit;
+}
+
+.image-frame {
+    border: 2px solid #ccc;
+    padding: 10px;
+}
+
+.image-frame img {
+    display: block;
+    width: 100%;
+    height: auto;
 }
 
 ol,
