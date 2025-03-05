@@ -26,7 +26,7 @@
                         {% else %}
                             <span style="color: blue;">{{ product.quantity }}</span>
                         {% endif %}
-                    </h5></b>
+                    </b></h5>
                 </div>
                 <div class="small mb-1">
                     <h5><b>Rating:
@@ -52,28 +52,26 @@
                     {{ product.description | safe }}
                   </p>
 
-
-
-
-
                 <!--Placing an order section-->
                 <div class="d-flex">
-                    <form  action = "" method="POST" enctype="multipart/form-data">
-  
+                    <form action="{% url 'product_placing' product.id %}" method="POST">
                         <div class="form-group">
-                            <h2>Place an order</h2>
+                            <h2>Place an Order</h2>
                         </div>
+                        {% csrf_token %}
                         <div class="form-group mb-3">
+                            {{ form.as_p }}
+                        </div>
+                
+                        
+                        <div class="form-group mb-3">
+                            
                             <input type="submit" class="btn btn-success" value="Send">
-                            <a href="{% url 'index' %}">
-                                <button type="button" class="btn btn-secondary">Back to Dashboard</button>
-                            </a>
+                            <a href="{% url 'index' %}" class="btn btn-secondary">Back to Dashboard</a>
                         </div>
                     </form>
                 </div>
                 
-
-            
             </div>
             <!--COmment section will be it-->
             <div>

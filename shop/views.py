@@ -1,13 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
-from shop.models import Product, Category, Comment
-from .models import Product, Order
+from .models import Product
+from shop.models import  Category, Comment
 from shop.forms import ProductForm, ProductModelForm, OrderForm, CommentForm
-#2 modules imported 
-from django.utils import timezone
 from datetime import datetime
-# Create your views here.
+
 
 
 def index(request, category_id: int | None = None):
@@ -61,13 +59,13 @@ def related_product(request, product_id):
 
     context = {
         'product': product,
-        'related_products': related_products,
+        'related_products': related_products
     }
-    return render(request, 'shop/detail.html', context)
+    return render(request, 'shop/product_detail.html', context)
 
 
 
-@login_required(login_url='/admin/')
+@login_required
 def product_create(request):
     form = ProductForm()
     if request.method == 'POST':
@@ -116,30 +114,32 @@ def product_delete(request, product_id):
 
 
 
-# working
 @login_required
 def product_placing(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    
+
     if request.method == 'POST':
-        form = OrderForm(request.POST)
+        form = OrderForm(request.POST or None, product_id=product.id) #html da topishi uchun kk boldi
         if form.is_valid():
             order = form.save(commit=False)
             order.product = product
             order.user = request.user
-            if order.quantity <= product.quantity:
+
+            if order.quantity > product.quantity:
+                form.add_error('quantity', 'Not enough stock available')
+            else:
                 product.quantity -= order.quantity
                 product.save()
                 order.is_placed = True
                 order.save()
-                return redirect('index')  # Redirect to a success page
-            else:
-                form.add_error('quantity', 'Not enough stock available')
+                return redirect('index')
 
     else:
-        form = OrderForm(initial={'product_id': product_id})
+        form = OrderForm()  # empty form bo
 
     return render(request, 'shop/product_detail.html', {'product': product, 'form': form})
+
+
 
 
 

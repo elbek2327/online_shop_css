@@ -75,10 +75,10 @@ class Order(BaseModel):
     is_placed = models.BooleanField(default=False) #Joylanganmi yoqmi
     
     def __str__(self):
-        return f'Order: {self.product.name} - {self.quantity} - {self.user.username}'
+        return f'Order: {self.product.name} - {self.quantity}'
     
     class Meta:
-        db_table = 'order'
+        db_table = 'Order'
         
 
 

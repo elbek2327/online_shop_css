@@ -1,6 +1,8 @@
 from django import forms
 from shop.models import Product, Category, Comment
 from .models import Order
+from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
 
 
 class ProductForm(forms.Form):
@@ -35,34 +37,37 @@ class ProductModelForm(forms.ModelForm):
     
     class Meta:
         model = Product
-        # fields = ['name', 'description', 'price', 'image', 'quantity', 'category', 'discount', 'rating']
         exclude = ()
-    
+
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ['name', 'surname', 'phone', 'quantity']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "Your name"}),
-            'surname': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "Your surname"}),
-            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "Your phone"}),
-            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': "Quantity"})
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'surname': forms.TextInput(attrs={'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control'})
         }
         
-        
-        
-        
+
+
+    def __init__(self, *args, **kwargs):
+        self.product_id = kwargs.pop('product_id', None)
+        super().__init__(*args, **kwargs)
+
     def clean_quantity(self):
-        quantity = self.cleaned_data['quantity']
-        product_id = self.initial.get('product_id')
-        product = Product.objects.get(id=product_id)
+        quantity = self.cleaned_data.get('quantity')
+
+        if self.product_id is None:
+            raise ValidationError("Product ID is required for order validation.")
+
+        product = get_object_or_404(Product, id=self.product_id)
 
         if quantity > product.quantity:
-            raise forms.ValidationError("Not enough stock available.")
+            raise ValidationError("Not enough stock available.")
+
         return quantity
-    
-
-
 
 
 # added new
