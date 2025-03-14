@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 (
                     "product",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="shop.product"
+                        on_delete=django.db.models.deletion.CASCADE, to="users.product"
                     ),
                 ),
                 (

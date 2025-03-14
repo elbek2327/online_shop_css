@@ -5,5 +5,6 @@ from core import settings
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
-                  path('shop/', include('shop.urls'))
+                  path('shop/', include('shop.urls'), name='shop'),
+                  path('users/', include('users.urls'), name = 'users'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
